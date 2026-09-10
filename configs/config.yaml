@@ -1,0 +1,23 @@
+data:
+  openml_id: 42125
+  raw_path: "data/raw_attrition.csv"
+  reference_path: "data/reference.csv"
+  production_path: "data/production_month1.csv"
+  target_column: "Attrition"
+  test_size: 0.2
+  random_state: 42
+
+model:
+  type: "random_forest"
+  n_estimators: 100
+  max_depth: 6
+  learning_rate: 0.1
+  min_performance_threshold: 0.75
+
+monitoring:
+  drift_share_threshold: 0.20
+  report_output_path: "reports/drift_report.html"
+
+mlflow:
+  experiment_name: "employee_attrition_monitoring"
+  tracking_uri: "file:./mlruns"

@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Data and Models (Tracked via DVC / MLflow)
+data/*.csv
+!data/*.dvc
+models/*
+mlruns/
+dvc_remote/
+
+# Reports and Caches
+reports/*.html
+reports/*.json
+.pytest_cache/
+.dvc/cache/

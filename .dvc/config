@@ -1,0 +1,4 @@
+[core]
+    remote = local_remote
+['remote "local_remote"']
+    url = /home/darke/projects/Sprint17/employee_attrition/dvc_remote
