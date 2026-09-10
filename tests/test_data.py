@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 import pytest
 import yaml
@@ -6,22 +5,32 @@ import yaml
 
 @pytest.fixture
 def config():
-    """Fixture to load configuration setting for tests."""
     with open("configs/config.yaml", "r") as f:
         return yaml.safe_load(f)
 
 
-def test_reference_file_exists(config):
-    """Verify that the reference data file exists at the path specified in config."""
+@pytest.fixture
+def ref_df(config):
     ref_path = config["data"]["reference_path"]
-    assert os.path.exists(ref_path), f"Reference file not found at {ref_path}"
+    return pd.read_csv(ref_path)
 
 
-def test_data_quality(config):
-    """Verify that the reference dataset is non-empty and contains the target column."""
-    ref_path = config["data"]["reference_path"]
-    df = pd.read_csv(ref_path)
+# Data Test 1: Column existence
+def test_data_column_existence(config, ref_df):
     target_col = config["data"].get("target_column", "Attrition")
+    assert target_col in ref_df.columns, f"Required column '{target_col}' missing"
 
-    assert not df.empty, "Reference dataset should not be empty"
-    assert target_col in df.columns, f"Target column '{target_col}' missing from reference dataset"
+
+# Data Test 2: Valid target values
+def test_data_valid_target_values(config, ref_df):
+    target_col = config["data"].get("target_column", "Attrition")
+    target_vals = set(ref_df[target_col].dropna().unique())
+    assert target_vals.issubset({0, 1}) or target_vals.issubset({"Yes", "No"})
+
+
+# Data Test 3: Feature ranges
+def test_data_feature_ranges(ref_df):
+    if "Age" in ref_df.columns:
+        assert (ref_df["Age"].dropna() > 0).all(), "Age values must be greater than zero"
+    if "MonthlyIncome" in ref_df.columns:
+        assert (ref_df["MonthlyIncome"].dropna() >= 0).all(), "Income cannot be negative"
