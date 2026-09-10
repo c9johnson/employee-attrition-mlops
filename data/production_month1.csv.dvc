@@ -1,5 +1,5 @@
 outs:
-- md5: c6c29655c5ebcef2f6bf118b2a3b6895
-  size: 307374
+- md5: e290e5f144dfa7830eadc6f5f9e12547
+  size: 47794
   hash: md5
   path: production_month1.csv

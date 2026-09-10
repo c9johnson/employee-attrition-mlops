@@ -1,5 +1,5 @@
 outs:
-- md5: 05a49f4c1fd1fba6355bcb503c72302a
-  size: 1532904
+- md5: 084eafddee7e64898661896b6a36ece1
+  size: 226431
   hash: md5
   path: raw_attrition.csv
