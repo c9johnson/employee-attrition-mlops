@@ -19,18 +19,20 @@ def main():
 
     os.makedirs("data", exist_ok=True)
 
-    print("--- Step 1: Fetching IBM HR Attrition Dataset via OpenML ---")
-    dataset = fetch_openml(data_id=42125, as_frame=True, parser="auto")
+    print("--- Step 1: Fetching IBM HR Attrition Dataset via OpenML (ID: 43893) ---")
+    dataset = fetch_openml(data_id=43893, as_frame=True, parser="auto")
     df = dataset.frame
 
     print(f"Loaded dataset shape: {df.shape}")
+    print(f"Columns preview: {df.columns.tolist()[:5]}...")
 
+    # Standardize Attrition binary target (1 = Yes, 0 = No)
     if "Attrition" in df.columns:
         df["Attrition"] = df["Attrition"].apply(
             lambda x: 1 if str(x).strip().lower() in ["yes", "1", "true"] else 0
         )
 
-    # Inject missing values (~5% random NaNs) to satisfy rubric
+    # Inject missing values (~5% random NaNs) to satisfy rubric requirements
     np.random.seed(42)
     mask_numeric = np.random.rand(len(df)) < 0.05
     mask_categ = np.random.rand(len(df)) < 0.05
@@ -46,6 +48,7 @@ def main():
     reference = df.iloc[:split_idx].copy()
     production = df.iloc[split_idx:].copy()
 
+    # Simulate drift in production data
     if "MonthlyIncome" in production.columns:
         production["MonthlyIncome"] = pd.to_numeric(production["MonthlyIncome"], errors="coerce") * 1.35
     if "Age" in production.columns:
@@ -59,7 +62,6 @@ def main():
     subprocess.run(["dvc", "add", raw_path], check=True)
     subprocess.run(["dvc", "add", ref_path], check=True)
     subprocess.run(["dvc", "add", prod_path], check=True)
-    subprocess.run(["dvc", "push"], check=True)
 
     print("\n✅ Data preparation and DVC tracking complete!")
 
