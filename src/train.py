@@ -12,7 +12,7 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from src.preprocessing import prepare_data
-
+from src.evaluate import evaluate_model
 
 def load_config(config_path="configs/config.yaml"):
     """Load yaml configuration settings."""
@@ -64,20 +64,10 @@ def train_and_log_model(config_path="configs/config.yaml"):
         )
         clf.fit(X_train, y_train)
 
-        # Predictions & Probabilities
-        y_pred = clf.predict(X_test)
-        y_proba = clf.predict_proba(X_test)[:, 1]
+        # Evaluate Model using src.evaluate
+        metrics = evaluate_model(clf, X_test, y_test)
 
-        # Calculate Metrics
-        metrics = {
-            "accuracy": accuracy_score(y_test, y_pred),
-            "precision": precision_score(y_test, y_pred, zero_division=0),
-            "recall": recall_score(y_test, y_pred, zero_division=0),
-            "f1_score": f1_score(y_test, y_pred, zero_division=0),
-            "roc_auc": roc_auc_score(y_test, y_proba),
-        }
-
-        # Log Metrics
+        # Log Metrics to MLflow
         for metric_name, value in metrics.items():
             mlflow.log_metric(metric_name, value)
             print(f"  {metric_name}: {value:.4f}")
